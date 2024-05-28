@@ -54,6 +54,13 @@ public:
 		io->send_block(tmp+1, 1);
 		mitccrh.setS(tmp[1]);
 	}
+	HalfGateGen(T * io, block &_delta): io(io) {
+		block tmp;
+		PRG().random_block(&tmp, 1);
+		set_delta(_delta);
+		io->send_block(&tmp, 1);
+		mitccrh.setS(tmp);
+	}
 	void set_delta(const block & _delta) {
 		delta = set_bit(_delta, 0);
 		PRG().random_block(constant, 2);
@@ -66,6 +73,7 @@ public:
 	block and_gate(const block& a, const block& b) override {
 		block table[2];
 		block res = halfgates_garble(a, a^delta, b, b^delta, delta, table, &mitccrh);
+		std::cout << "delta is " << delta << std::endl;
 		io->send_block(table, 2);
 		return res;
 	}
